@@ -1,0 +1,147 @@
+<?php
+// секции, которые могут быть в базе для V2
+$section1_V2= array(
+	'ENGINE0'=>1,
+	'ENGINE1'=>1,
+	'ARCHS0'=>1,
+	'ENGINE2'=>1,
+	'ARCHS1'=>1,
+	'ARCHS2'=>1,
+	'ADVHEUR0'=>1,
+	'ADVHEUR1'=>1,
+	'PWSCAN0'=>1,
+	'PWSCAN1'=>1,
+	'PWSCAN2'=>1,
+	'UTILMOD0'=>1,
+	'UTILMOD1'=>1,
+	'UTILMOD2'=>1,
+	'HELPER0'=>1,
+	'HELPER1'=>1,
+	'HELPER2'=>1,
+	'CHARON0'=>1,
+	'CHARON1'=>1,
+	'CHARON2'=>1,
+	'config000'=>1,
+	'ADVHEUR2'=>1,
+);
+
+// Секции компонентов,  которые надо оставлять в базе, если они не присутствуют в 
+// update.ver для V2
+//Аглийсеие версии компонентов
+$section2_V2_en= array(
+	'NOD32MOD_WINNT_ENGLISH_BASE'=>1,
+	'NOD32MOD_WIN98_ENGLISH_BASE'=>1,
+	'NOD32MOD_WINNT_ENGLISH_STANDARD'=>1,
+	'NOD32MOD_WIN98_ENGLISH_STANDARD'=>1,
+	'NOD32MOD_WINNT_ENGLISH_INET'=>1,
+	'NOD32MOD_WIN98_ENGLISH_INET'=>1,
+	'NOD32MOD_WINNT_ENGLISH_ADMIN'=>1,
+	'NOD32MOD_WIN98_ENGLISH_ADMIN'=>1,
+	'NOD32MOD_WINNT_ENGLISH_SAK'=>1,
+);	
+// Русские версии компонентов
+$section2_V2_ru= array(
+	'NOD32MOD_WINNT_RUSSIAN_BASE'=>1,
+	'NOD32MOD_WINNT_RUSSIAN_STANDARD'=>1,
+	'NOD32MOD_WINNT_RUSSIAN_INET'=>1,
+	'NOD32MOD_WIN98_RUSSIAN_BASE'=>1,
+	'NOD32MOD_WIN98_RUSSIAN_STANDARD'=>1,
+	'NOD32MOD_WIN98_RUSSIAN_INET'=>1,
+	'NOD32MOD_WINNT_RUSSIAN_ADMIN'=>1,
+	'NOD32MOD_WIN98_RUSSIAN_ADMIN'=>1,
+
+);
+
+// Секции, которые могут быть в базе для V3
+$section1_V3= array(
+	'ADVHEUR0'=>1,
+	'ADVHEUR1'=>1,
+	'ADVHEUR2'=>1,
+	'ANTISTEALTH0'=>1,
+	'ANTISTEALTH1'=>1,
+	'ANTISTEALTH2'=>1,
+	'ANTISTEALTH640'=>1,
+	'ANTISTEALTH641'=>1,
+	'ANTISTEALTH642'=>1,
+	'ARCHIVES0'=>1,
+	'ARCHIVES1'=>1,
+	'ARCHIVES2'=>1,
+	'CLEANER0'=>1,
+	'CLEANER1'=>1,
+	'CLEANER2'=>1,
+	'ENGINE0'=>1,
+	'ENGINE1'=>1,
+	'ENGINE2'=>1,
+	'EPFW0'=>1,
+	'EPFW1'=>1,
+	'EPFW2'=>1,
+	'EPFW640'=>1,
+	'EPFW641'=>1,
+	'EPFW642'=>1,
+	'LOADER0'=>1,
+	'LOADER1'=>1,
+	'LOADER2'=>1,
+	'LOADER640'=>1,
+	'LOADER641'=>1,
+	'LOADER642'=>1,
+	'MAILSERVER0'=>1,
+	'MAILSERVER1'=>1,
+	'MAILSERVER2'=>1,
+	'PERSEUS0'=>1,
+	'PERSEUS1'=>1,
+	'PERSEUS2'=>1,
+	'SELFDEFENSE0'=>1,
+	'SELFDEFENSE1'=>1,
+	'SELFDEFENSE2'=>1,
+	'SELFDEFENSE640'=>1,
+	'SELFDEFENSE641'=>1,
+	'SELFDEFENSE642'=>1,
+	'SYSTEMSTATUS0'=>1,
+	'SYSTEMSTATUS1'=>1,
+	'SYSTEMSTATUS2'=>1,
+	'SYSTEMSTATUS640'=>1,
+	'SYSTEMSTATUS641'=>1,
+	'SYSTEMSTATUS642'=>1,
+	'SMON0'=>1,
+	'SMON1'=>1,
+	'SMON2'=>1,
+	'RA0'=>1,
+	'RA1'=>1,
+	'RA2'=>1,
+	'AMON640'=>1,
+	'AMON641'=>1,
+	'AMON642'=>1,
+	'AMON0'=>1,
+	'AMON1'=>1,
+	'AMON2'=>1,
+	
+);
+
+// Секции, компонентов, которые надо оставлять в базе, если они не присутствуют в 
+// update.ver для V3
+// Английские версии компонентов
+$section2_V3_en= array(
+	'EAV_WINNT32_1033'=>1,
+	'EAV_WINNT64_1033'=>1,
+	'EAVBE_WINNT32_1033'=>1,
+	'EAVBE_WINNT64_1033'=>1,
+	'ESS_WINNT32_1033'=>1,
+	'ESS_WINNT64_1033'=>1,
+	'ESSBE_WINNT32_1033'=>1,
+	'ESSBE_WINNT64_1033'=>1,
+);	
+$section2_V3_ru= array(	
+	// Русские версии компонентов
+	'EAV_WINNT32_1049'=>1,
+	'EAV_WINNT64_1049'=>1,
+	'EAVBE_WINNT32_1049'=>1,
+	'EAVBE_WINNT64_1049'=>1,
+	'ESS_WINNT32_1049'=>1,
+	'ESS_WINNT64_1049'=>1,
+	'ESSBE_WINNT32_1049'=>1,
+	'ESSBE_WINNT64_1049'=>1,
+
+);
+
+
+?>
