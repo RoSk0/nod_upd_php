@@ -86,8 +86,9 @@ function parseDB($db){
                 $a10=@strpos($line, "=");
 		$var=@substr($line, 0, $a10 );
 		//@list($var,$val) = explode("=",$line); 
-		$val=@substr($line,  $a10+1);
-		$result[$last_section][$var] = $val; 
+		$val1=@substr($line,  $a10+1);
+		preg_match('/^(["\']?)(.*[^"\'])(["\']?)/', $val1, $val);
+		$result[$last_section][$var] = $val[2]; 
             } 
         } 
     } 
