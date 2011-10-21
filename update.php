@@ -7,15 +7,16 @@
  * @author mnk  
  * @email mkukushkin@mail.ru
  * @Thanks for kode@airnet.ru 
- * @version 1.22
+ * @version 2.0b
  *  Новые версии и описание программы можно взять
  * http://www.volmed.org.ru/wiki/index.php/Скрипт_по_обновлению_антивирусных_баз_NOD32_под_Linux_(PHP) 
  */ 
 $start = microtime(true); 
 //Отображать все ошибки, кроме notice и strict
 error_reporting(E_ALL ^ E_NOTICE ^ E_STRICT);
-include("section.php");
 include("setup.php");
+include("section.php");
+
 
 
 
@@ -68,14 +69,18 @@ foreach ($servers as $server){
 	if (file_exists($savepath)==false) mkdir($savepath);
     if (file_exists($savepath."arc")==false) mkdir($savepath."arc");
     $section1=${'section1_'.$server['type']};
-	if($server['type']=='V3' && $server['ess']==false){
+	if($server['type']=='V3'  && $server['ess']==false){
 		unset($section1['SMON0'], $section1['SMON1'], $section1['SMON2']);
+	}
+    	if( $server['type']=='V5' && $server['ess']==false){
+		unset($section1['SMON0'], $section1['SMON1'], $section1['SMON2'],$section1['HORUS0'],$section1['HORUS1'],$section1['HORUS2']);
 	}
     //print_r($section1);
     //if (isset(${'section2_'.$server['type']})==true && $server['compon']==true) $section2=${'section2_'.$server['type']};
        	
     if(file_exists($savepath."update.ver")) {
-       $current_db = parseDB(file_get_contents($savepath."update.ver")); 
+		$current_db = parse_ini_file($savepath."update.ver", true, INI_SCANNER_RAW );
+       //$current_db = parseDB(file_get_contents($savepath."update.ver")); 
 		//print_r($current_db);
 		$version_old=version1($current_db);
 	}	
@@ -83,7 +88,8 @@ foreach ($servers as $server){
 	// Если не указан сервер обновлений, и нет файла со списком серверов от eset,
 	// то список серверов будет взят из  update.ver с сервера http://update.eset.com/
 	if (file_exists($savepath."/arc/servers")){
-		$upd_ser1=@parseDB(@file_get_contents($savepath."/arc/servers"));
+		$upd_ser1=@parse_ini_file($savepath."/arc/servers", true, INI_SCANNER_RAW );
+		//$upd_ser1=@parseDB(@file_get_contents($savepath."/arc/servers"));
 		$upd_ser2=@url_servers($upd_ser1[HOSTS][Other]);
 		// Удалим первые два сервера.
 		unset($upd_ser2[0], $upd_ser2[1]);
@@ -114,6 +120,7 @@ foreach ($servers as $server){
 		// Определяем пути до файлов в зависимости от версии
 		if ($server['user']==true && $server['type'] == "V2" && $server['all_in_one'] == false) $newpath1="nod_upd/";
 		elseif($server['user']==true && $server['type'] == "V3" && $server['all_in_one'] == false) $newpath1="eset_upd/";
+		elseif($server['user']==true && $server['type'] == "V5" && $server['all_in_one'] == false) $newpath1="eset_upd/v5/"; 
 		//else $server['newpath']="";
 		else $newpath1="";
 		//echo "url=".$newpath1."\n";
@@ -133,7 +140,9 @@ foreach ($servers as $server){
 		@unlink($savepath."/arc/update.rar");
 		}	
 	
-		$updatedb=@parseDB(@file_get_contents($savepath."/arc/update.ver"));
+		
+		$updatedb=@parse_ini_file($savepath."/arc/update.ver", true, INI_SCANNER_RAW );
+		//$updatedb=@parseDB(@file_get_contents($savepath."/arc/update.ver"));
 		if (isset($updatedb['HOSTS']['Other'])==true){
 			$upd_ser['HOSTS']['Other']=$updatedb['HOSTS']['Other'];}
 		//print_r($updatedb[HOSTS]);
@@ -171,6 +180,7 @@ foreach ($servers as $server){
 				$handle = fopen($savepath.$file, "r");
 				$contents = fread($handle, 550);
 				fclose($handle);
+				
 				$data=parseDB($contents);
 				if (isset($data['UPDATE_INFO']['name'])==true){
 					$name_upd=@basename($updatedb[$data['UPDATE_INFO']['name']]['file']);
@@ -223,7 +233,7 @@ foreach ($servers as $server){
 					
 					// Если секции не существует, но она есть в section2  или билд нового файла существует и
 					// меньше старого
-				}elseif (isset($section2[$data['UPDATE_INFO']['name']]) || (isset($updatedb[$data['UPDATE_INFO']['name']]['build']) && $data['UPDATE_INFO']['build'] > $updatedb[$data['UPDATE_INFO']['name']]['build'])) {
+					}elseif (isset($section2[$data['UPDATE_INFO']['name']]) || (isset($updatedb[$data['UPDATE_INFO']['name']]['build']) && $data['UPDATE_INFO']['build'] > $updatedb[$data['UPDATE_INFO']['name']]['build'])) {
 					// Добавляем данные в update.ver
 					$new_update[$data['UPDATE_INFO']['name']]=new_section1($data['UPDATE_INFO'], $file ,$savepath);
 				} else 	{
@@ -235,12 +245,16 @@ foreach ($servers as $server){
 
 		// Докачиваем нужные файлы
 		foreach ($updatedb as $section=>$vars){ 
+		// Все названия секций в Верхний регистр.
+		//echo 'section='.$section."\n";
+		$section=strtoupper($section);
 			// Если до этого была ошибка, то прекращаем обновление
 			if ($error1==1){break;}
 			//echo "33333333333333\n";
 			$file_nup=@explode('.', $vars['file']);
 			if (isset($file_nup[1])==false) $file_nup[1]="";
 			$file_name=@basename($vars['file']);
+			//echo "11111=".$section2[$section]."\n";
 			if( file_exists($savepath.$file_name)==false && $file_nup[1]=="nup" && (isset($section1[$section]) || isset($section2[$section] ))){ 
 				if($func_download($upd_ser3,$vars['file'], $savepath.$file_name,@$server['user'],@$server['password'], $proxy, $quiet)==false){
 				$error1=1;
@@ -302,7 +316,11 @@ foreach ($servers as $server){
 		//Переписываем новые базы в web каталог		
 		rmfiles($server['www']);
 		copyfiles($savepath, $server['www']);
-		if (file_exists($server['www'].$newpath1)==false) mkdir($server['www'].$newpath1);
+		if (file_exists($server['www'].$newpath1)==false) {
+			preg_match('/([a-z0-9_-]+)\/([v\d]*)(\/*)/',$newpath1, $path_v );
+			mkdir($server['www'].$path_v[1]);
+			if ($path_v[2]==true)mkdir($server['www'].$newpath1);
+		}
 		copy($savepath.'update.ver', $server['www'].$newpath1.'update.ver');
 		// Меняем права на файл
 		exec('chown -R '.HTTP_USER.' '.$server['www']);
