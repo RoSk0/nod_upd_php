@@ -11,13 +11,15 @@ define("HTTP_USER", "apache");
 
 
 // Архиватор unrar, распостраняемый по GNU (https://gna.org/projects/unrar/)
-$unrar='/usr/local/bin/unrar';
+#$unrar='/usr/local/bin/unrar';
 
 //Программа закачки файлов обновлений
 // Если Вы хотите использовать wget разкоментируйте следующую строку
+// и укажите путь до wget в вашей системе 
 // Если она закоментирована, будет использоваться php-curl
 
-$download_pr="wget";
+$wget='/usr/bin/wget';
+
 
 // У меня, например, все что запускается из крона и выводит сообщения в консоль,
 // отправляются на п/я root'а и пересылаются мне.
@@ -25,7 +27,7 @@ $download_pr="wget";
 // на определенный  п/я ящик, то снимаем ремарку со следующей строки и указываем 
 // нужный адрес.
 
-$user_mail="user@server";
+#$user_mail="user@server";
 
 // Но при этом дб настроен и запущен почтовый сервер (postfix, sendmail или другой).
 
@@ -36,7 +38,7 @@ $user_mail="user@server";
 
 // Возможен один из вариантов указанных ниже:
 //
-// $proxy = 'http://username:password@servername_OR_ip:port';
+//$proxy = 'http://username:password@servername_OR_ip:port';
 // $proxy = 'http://username@servername_OR_ip:port';
 // $proxy = 'http://servername_OR_ip:port';
 /////////////////////////////////////////////////////
@@ -45,10 +47,10 @@ $user_mail="user@server";
 // $quit=0 - Отображать сообщения на консоли
 $quiet=1;
 // Имя пользователя   (может не присутствовать)
-$userV2='TRIAL-23235';
+$userV2='TRIAL-33453510';
 //$userV2='';
 // Пароль (может не присутствовать)
-$pswV2='3et2323uht4';
+$pswV2='dfgdfgcnbup';
 //$pswV2='';
 
 //Укажите логин и пароль для V3 и V5, если они отличаются от V2.
@@ -62,7 +64,7 @@ $pswV5=$pswV2;
 $servers = array(
 	array(
 		// Адрес сервера (Если закачка с офа, то строку 'host' надо заремить)
-		//'host'=>'http://www.kristel.ru/nod32/eset_upd/',
+		//'host'=>'http://www.volmed.org.ru/nod32/',
 		// Web каталог для баз
 		'www'=>'/var/www/nod32/',
 		'user'=>$userV2,
@@ -86,7 +88,7 @@ $servers = array(
 // Настройки для верисии V3,4
 	array(
 		// Адрес сервера (Если закачка с офа, то строку 'host' надо заремить)
-		//'host'=>'http://www.volkristel.ru/nod32/eset_upd/',
+		//'host'=>'http://www.volmed.org.ru/nod323n/',
 		// Web каталог для баз
 		'www'=>'/var/www/nod323/',
 		'user'=>$userV3,
@@ -115,7 +117,7 @@ $servers = array(
 // Настройки для верисии V5
 	array(
 		// Адрес сервера (Если закачка с офа, то строку 'host' надо заремить)
-		//'host'=>'http://www.kristel.ru/nod32/eset_upd/',
+		//'host'=>'http://www.volmed.org.ru/nod325/',
 		// Web каталог для баз
 		'www'=>'/var/www/nod325/',
 		'user'=>$userV5,

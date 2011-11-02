@@ -88,8 +88,6 @@ function parseDB($db){
 		//@list($var,$val) = explode("=",$line); 
 		$val1=@substr($line,  $a10+1);
 		preg_match('/^(["\']?)(.*[^"\'])(["\']?)/', $val1, $val);
-		// another version of regexp
-		// '/^(["\']?)([^"\']+)(["\']?)/'
 		$result[$last_section][$var] = $val[2]; 
             } 
         } 
@@ -131,69 +129,6 @@ function parseHeader($array){
         } 
     } 
     return $result; 
-} 
-
-/** 
- * Downloads file from given host with wget  
- *  
- * @param string $host HTTP Host  
- * @param string $file File on host to download  
- * @param string $save If not empty - save to file  
- * @param string $user HTTP Auth User  
- * @param string $password HTTP Auth Password  
- * @return mixed  
- */  
-function getHTTPFilew($host,$file,$save="",$user="",$password="", $proxy="", $quiet=""){ 
-    $host = trim(str_replace("http://","",$host),"/"); 
-
-    $data = ""; 
-    $last_percent = 0; 
-    $user_password = ($user)?"$user".(($password)?":{$password}":"")."@":""; 
-
-    $open_url = "http://{$user_password}{$host}/{$file}"; 
-	
-    $fp = @fopen($open_url,"r",false,stream_context_create(array('http'=>array('agent'=>'WGET', 'proxy'=>$proxy, 'request_fulluri'=>true)))); 
-
-
-    if($fp==true){ 
-
-        if($save){ 
-            //echo "Creating file {$save}\n"; 
-            $sp = fopen($save,"w+",false,stream_context_create(array('ftp' => array('overwrite' => true)))); 
-
-            if(!$sp){ 
-				if ($quiet==false) {echo "Error: Failed to create file!!!\n";} 
-				return false; 
-            } 
-        } 
-
-        if ($quiet==false) {echo "Downloading {$file}: ";} 
-        $params = stream_get_meta_data($fp); 
-        $params = parseHeader($params['wrapper_data']); 
-        $length = $params['Content-Length']; 
-
-        while (!feof($fp)) { 
-            $percent = round(ftell($fp)/$length*100); 
-            if($last_percent < $percent and $percent%10==0){ 
-                $last_percent = $percent; 
-                if ($quiet==false) echo "...{$percent}%"; 
-            } 
-            if(!isset($sp)){ 
-                $data .= fread($fp,128); 
-            }else{ 
-                fwrite($sp,fread($fp,128)); 
-            } 
-        } 
-        if ($quiet==false) echo "...OK \n"; 
-    fclose($fp); 
-	fclose($sp);
-	}else{ 
-        if ($quiet==false) echo "Failed to download {$open_url}!!!\n"; 
-    } 
-     //if(!$save){ 
-     //   return $data; 
-    //} 
-     return true;
 } 
 
 
@@ -395,25 +330,26 @@ function url_servers($URL){
 	} 
 
 // Функция по закачке файла через wget + прокси 
-function func_wget($url, $file, $proxy_wget) {
-    //echo "wget_bash\n";
+function func_wget($url, $file, $proxy_wget="", $quiet="") {
     global $wget;
-	global $quiet;
-	@exec("export http_proxy=http://".$proxy_wget['host'].":".$proxy_wget['port']."\n".
-	$wget." ".$url." -O ".$file." ".$quiet." --proxy=on  --proxy-user=".$proxy_wget['user']." --proxy-password=".$proxy_wget['passwd']." " , $out, $val);
-	//echo "\n";
-	//echo $wget.' '.$url.' -O '.$file.' --proxy=on  --proxy-user='.$proxy_wget['user'].' --proxy-password='.$proxy_wget['passwd'].' ';
-    if ($val==1) { return false; } else { return true; }
+	If ($quiet==true)$quiet_wget='-q';
+	else echo "\n";
+	if ($proxy_wget ==true) {$proxy_parametr=' --proxy=on  --proxy-user='.$proxy_wget['user'].' --proxy-password='.
+			$proxy_wget['passwd'];
+			$export_proxy='export http_proxy=http://'.$proxy_wget['host'].':'.$proxy_wget['port']."\n";
+	}
+	//echo $export_proxy.' '.$wget.' '.$quiet_wget.' '.$url.' -O '.$file.' '.$proxy_parametr."\n";
+	@exec($export_proxy.' '.$wget.' '.$quiet_wget.' '.$url.' -O '.$file.' '.$proxy_parametr, $out, $val);
+	if ($val==1) { return false; } else { return true; }
 	}    
 
-function getHTTPFile1($host,$file,$save="",$user="",$password="",$proxy_wget){
+function getHTTPFile1($host,$file,$save="",$user="",$password="",$proxy_wget="", $quiet=""){
     $host = trim(str_replace("http://","",$host),"/");
-    
-	$user_password =  ($user)?"$user".(($password)?":{$password}":"")."@":""; 
+    $user_password =  $user.':'.$password.'@'; 
     $open_url = "http://{$user_password}{$host}/{$file}";
-    $fp = func_wget($open_url, $save, $proxy_wget); 
-	//print_r($proxy_wget);
+    $fp = func_wget($open_url, $save, $proxy_wget, $quiet); 
 	return $fp;
 }
+
 
 ?>

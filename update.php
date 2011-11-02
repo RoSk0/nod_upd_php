@@ -7,7 +7,7 @@
  * @author mnk  
  * @email mkukushkin@mail.ru
  * @Thanks for kode@airnet.ru 
- * @version 2.0b
+ * @version 2.0
  *  Новые версии и описание программы можно взять
  * http://www.volmed.org.ru/wiki/index.php/Скрипт_по_обновлению_антивирусных_баз_NOD32_под_Linux_(PHP) 
  */ 
@@ -19,10 +19,8 @@ include("section.php");
 
 
 
-
-
 ini_set("display_errors",0); 
-ini_set("user_agent","WGET"); 
+ini_set("user_agent","wget"); 
 
 include("functions.php"); 
 
@@ -33,17 +31,15 @@ $mail_text="";
 $mail_cont="";
 
 // Определяем использовать ли прокси и метод закачки
-if (isset($proxy)==true) {
+if ($proxy==true) {
 	$proxy=proxy_par($proxy);
 	//echo "proxy=$proxy\n";
 }else{$proxy='';}
-
 //Определяем задан ли unrar
 if (isset($unrar)==false) $unrar="";
 
 // Проверяем программу закачки
-if ($download_pr=="wget" && $proxy==false) $func_download="getHTTPFilew";
-elseif($download_pr=="wget" && $proxy==true) $func_download="getHTTPFile1";
+if ($wget==true) $func_download="getHTTPFile1";
 else $func_download="getHTTPFilec";
 
 
@@ -128,6 +124,7 @@ foreach ($servers as $server){
 		@unlink ($savepath."/arc/update.ver");	
 		if ($func_download($upd_ser3.$newpath1,"update.ver",$savepath."arc/update.ver",@$server['user'],@$server['password'], $proxy, $quiet) == false) { 
 		$error1=1;
+		
 		continue;
 		 } 
 					
