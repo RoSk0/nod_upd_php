@@ -1,11 +1,7 @@
 <?php  
 function func_rar($path1, $file2, $unrar='', $verrar='') {
 	if (!function_exists("rar_open")){
-		//echo "rar_bash\n";
-		//echo "$unrar  -x  $path1/$file2 $path1/\n";
-		exec("$unrar  $path1/$file2 $path1/", $out, $val);
-		//echo "out=";
-		//print_r($out);
+		exec("$unrar x $path1/$file2 $path1/", $out, $val);
 		if (!isset($out[1])){
 		    echo "There no installed php functions php-rar and bash function unrar. Install one of this functions\n";
 		}

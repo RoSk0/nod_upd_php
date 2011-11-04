@@ -7,7 +7,7 @@
  * @author mnk  
  * @email mkukushkin@mail.ru
  * @Thanks for kode@airnet.ru 
- * @version 2.0
+ * @version 2.1
  *  Новые версии и описание программы можно взять
  * http://www.volmed.org.ru/wiki/index.php/Скрипт_по_обновлению_антивирусных_баз_NOD32_под_Linux_(PHP) 
  */ 
@@ -16,8 +16,6 @@ $start = microtime(true);
 error_reporting(E_ALL ^ E_NOTICE ^ E_STRICT);
 include("setup.php");
 include("section.php");
-
-
 
 ini_set("display_errors",0); 
 ini_set("user_agent","wget"); 
@@ -75,8 +73,8 @@ foreach ($servers as $server){
     //if (isset(${'section2_'.$server['type']})==true && $server['compon']==true) $section2=${'section2_'.$server['type']};
        	
     if(file_exists($savepath."update.ver")) {
-		$current_db = parse_ini_file($savepath."update.ver", true, INI_SCANNER_RAW );
-       //$current_db = parseDB(file_get_contents($savepath."update.ver")); 
+		//$current_db = parse_ini_file($savepath."update.ver", true, INI_SCANNER_RAW );
+        $current_db = parseDB(file_get_contents($savepath."update.ver")); 
 		//print_r($current_db);
 		$version_old=version1($current_db);
 	}	
@@ -84,8 +82,8 @@ foreach ($servers as $server){
 	// Если не указан сервер обновлений, и нет файла со списком серверов от eset,
 	// то список серверов будет взят из  update.ver с сервера http://update.eset.com/
 	if (file_exists($savepath."/arc/servers")){
-		$upd_ser1=@parse_ini_file($savepath."/arc/servers", true, INI_SCANNER_RAW );
-		//$upd_ser1=@parseDB(@file_get_contents($savepath."/arc/servers"));
+		//$upd_ser1=@parse_ini_file($savepath."/arc/servers", true, INI_SCANNER_RAW );
+		$upd_ser1=@parseDB(@file_get_contents($savepath."/arc/servers"));
 		$upd_ser2=@url_servers($upd_ser1[HOSTS][Other]);
 		// Удалим первые два сервера.
 		unset($upd_ser2[0], $upd_ser2[1]);
@@ -138,8 +136,8 @@ foreach ($servers as $server){
 		}	
 	
 		
-		$updatedb=@parse_ini_file($savepath."/arc/update.ver", true, INI_SCANNER_RAW );
-		//$updatedb=@parseDB(@file_get_contents($savepath."/arc/update.ver"));
+		//$updatedb=@parse_ini_file($savepath."/arc/update.ver", true, INI_SCANNER_RAW );
+		$updatedb=@parseDB(@file_get_contents($savepath."/arc/update.ver"));
 		if (isset($updatedb['HOSTS']['Other'])==true){
 			$upd_ser['HOSTS']['Other']=$updatedb['HOSTS']['Other'];}
 		//print_r($updatedb[HOSTS]);
