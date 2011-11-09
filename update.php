@@ -7,15 +7,16 @@
  * @author mnk  
  * @email mkukushkin@mail.ru
  * @Thanks for kode@airnet.ru 
- * @version 2.1
+ * @version 2.2
  *  Новые версии и описание программы можно взять
  * http://www.volmed.org.ru/wiki/index.php/Скрипт_по_обновлению_антивирусных_баз_NOD32_под_Linux_(PHP) 
  */ 
 $start = microtime(true); 
 //Отображать все ошибки, кроме notice и strict
 error_reporting(E_ALL ^ E_NOTICE ^ E_STRICT);
-include("setup.php");
 include("section.php");
+include("setup.php");
+
 
 ini_set("display_errors",0); 
 ini_set("user_agent","wget"); 
@@ -125,14 +126,18 @@ foreach ($servers as $server){
 		
 		continue;
 		 } 
-					
-		if ($server['user']==true) {
-			if(file_exists($savepath."arc/update.ver")) rename($savepath."arc/update.ver", $savepath."arc/update.rar");
-			$rar_val=func_rar($savepath.'arc', 'update.rar', $unrar, $verrar);
-			if ($rar_val==false){
-				if(file_exists($savepath."arc/update.rar"))rename($savepath."/arc/update.rar", $savepath."/arc/update.ver");
+		
+		if(substr(file_get_contents($savepath."/arc/update.ver"), 0,3)=='Rar'){
+			rename($savepath."arc/update.ver", $savepath."arc/update.rar");
+			$rar_val=func_rar($savepath.'arc', 'update.rar', $unrar);
+			if ($rar_val==true){
+				echo 'The archiver '.$unrar['path'].' can not extract the rar archive'; 
+				echo "\n";
+				$error6=1;
+				$error1=1;
 			}
-		@unlink($savepath."/arc/update.rar");
+			@unlink($savepath."/arc/update.rar");
+			if ($error6==true) break;
 		}	
 	
 		

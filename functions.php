@@ -1,11 +1,23 @@
 <?php  
-function func_rar($path1, $file2, $unrar='', $verrar='') {
+function func_rar($path1, $file2, $unrar='') {
 	if (!function_exists("rar_open")){
-		exec("$unrar x $path1/$file2 $path1/", $out, $val);
+		if ($unrar['key']==false){
+			echo 'You have not selected the variable $unrar=$arc[type_archive] in setup.php';
+			echo "\n";
+			$error6=1;
+			}
+		if ($unrar['path']==false){
+			echo 'You have not selected the variable $unrar[path] in setup.php';
+			echo "\n";
+			$error6=1;
+			}	
+		//echo $unrar['path'].' '.$unrar['key'].' '.$path1.'/'.$file2.' '.$unrar['out_dir'].$path1.'/'; echo "\n\n";
+		exec($unrar['path'].' '.$unrar['key'].' '.$path1.'/'.$file2.' '.$unrar['out_dir'].$path1.'/', $out, $val);
+		//print_r($out);
 		if (!isset($out[1])){
-		    echo "There no installed php functions php-rar and bash function unrar. Install one of this functions\n";
+		    echo "There no installed php functions php-rar or bash function unrar. Install one of this functions\n";
 		}
-	    	if ($out[7]=="All OK") {return true;} else {return false;}
+	    	if ($out[$unrar['id_ok']]==$unrar['value_ok'] && $error6==false) {return 0;} else {return 1;}
 	}else{
 		//echo "rar_php\n";
 		$rar_file = @rar_open($path1.'/'.$file2);
@@ -16,7 +28,7 @@ function func_rar($path1, $file2, $unrar='', $verrar='') {
 			$entry->extract($path1);
 		}	
 		rar_close($rar_file);
-		return true;
+		return 0;
 		}
 	}	
 }
