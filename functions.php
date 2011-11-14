@@ -353,7 +353,7 @@ function func_wget($url, $file, $proxy_wget="", $quiet="") {
 
 function getHTTPFile1($host,$file,$save="",$user="",$password="",$proxy_wget="", $quiet=""){
     $host = trim(str_replace("http://","",$host),"/");
-    $user_password =  $user.':'.$password.'@'; 
+    if($user==true) $user_password =  $user.':'.$password.'@'; 
     $open_url = "http://{$user_password}{$host}/{$file}";
     $fp = func_wget($open_url, $save, $proxy_wget, $quiet); 
 	return $fp;

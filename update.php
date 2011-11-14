@@ -7,7 +7,7 @@
  * @author mnk  
  * @email mkukushkin@mail.ru
  * @Thanks for kode@airnet.ru 
- * @version 2.2
+ * @version 2.3
  *  Новые версии и описание программы можно взять
  * http://www.volmed.org.ru/wiki/index.php/Скрипт_по_обновлению_антивирусных_баз_NOD32_под_Linux_(PHP) 
  */ 
@@ -28,6 +28,8 @@ $umask_files=umask();
 umask(0022);
 $mail_text="";
 $mail_cont="";
+
+If(!isset($diff))$diff=1;
 
 // Определяем использовать ли прокси и метод закачки
 if ($proxy==true) {
@@ -189,8 +191,25 @@ foreach ($servers as $server){
 				if (isset($data['UPDATE_INFO']['name'])==true && isset($updatedb[$data['UPDATE_INFO']['name']])==true && (isset($section2[$data['UPDATE_INFO']['name']]) || isset($section1[$data['UPDATE_INFO']['name']]))){
 					// Если build  файлов совпадают
 					//echo "filesize=".filesize($savepath.$file)."\n";
-					//echo "file_upd=".$updatedb[$data['UPDATE_INFO']['name']]['size']."\n";
+					//echo "file_upd=".$updatedb[$data['UPDATE_INFO']['name']]['size']."\n\n";
 					if ($data['UPDATE_INFO']['build'] == $updatedb[$data['UPDATE_INFO']['name']]['build']){
+						// Если размеры не совпадают
+						$size5=filesize($savepath.$name_upd);
+						if (($updatedb[$data['UPDATE_INFO']['name']]['size']-$diff) <= $size5 &&  $size5 <= ($updatedb[$data['UPDATE_INFO']['name']]['size']+$diff)){}
+						else{
+							if ($quiet==false){	
+								echo "\nThe different size of files $file and $name_upd\n";
+								echo "Delete old $file and upload new $name_upd\n";
+							}
+							unlink($savepath.$file);
+							$file_new=$updatedb[$data['UPDATE_INFO']['name']]['file'];
+							if($func_download($upd_ser3, $file_new, $savepath.$name_upd, @$server['user'],@$server['password'],$proxy, $quiet)==false){
+								$error1=1;
+								if ($quiet==false) echo "Error downloading file $file_new \n";
+								unlink($savepath.$file);
+							break;} 
+						}
+						
 						// Если имена не совпадают
 						if ($name_upd!=$file){
 							if ($quiet==false){	echo "Rename file $file in {$name_upd}\n";}
@@ -203,7 +222,7 @@ foreach ($servers as $server){
 					}elseif($data['UPDATE_INFO']['build'] <= $updatedb[$data['UPDATE_INFO']['name']]['build']){
 						$file_new=$updatedb[$data['UPDATE_INFO']['name']]['file'];
 						if ($quiet==false){	
-							echo "\nThe different size of files $file and $name_upd\n";
+							echo "\nThe  file $file older $name_upd\n";
 							echo "Delete old $file and upload new $name_upd\n";}
 						unlink($savepath.$file);
 						if($func_download($upd_ser3, $file_new, $savepath.$name_upd, @$server['user'],@$server['password'],$proxy, $quiet)==false){
@@ -212,14 +231,17 @@ foreach ($servers as $server){
 							unlink($savepath.$file);
 							break;} 
 						// Если после скачивания размеры не совпадают
-						/*
-						if (filesize($savepath.$name_upd) !=$updatedb[$data['UPDATE_INFO']['name']]['size']){
+						$size5=filesize($savepath.$name_upd);
+						//echo "size_file=$size5\n";
+						//echo "size_file_upd.ver=".$updatedb[$data['UPDATE_INFO']['name']]['size']."\n";
+						if (($updatedb[$data['UPDATE_INFO']['name']]['size']-$diff) <= $size5 &&  $size5 <= ($updatedb[$data['UPDATE_INFO']['name']]['size']+$diff)){}
+						else{
 							$error1=1;
-							echo "Error downloading file $file_new \n";
+							echo "Error size of downloading file $file_new \n";
 							unlink($savepath.$file);
 							break;
 						}
-						*/
+						
 						// Добавляем данные в update.ver
 						$new_update[$data['UPDATE_INFO']['name']]=$updatedb[$data['UPDATE_INFO']['name']];
 						$new_update[$data['UPDATE_INFO']['name']]['file']=$name_upd;
@@ -250,12 +272,13 @@ foreach ($servers as $server){
 		$section=strtoupper($section);
 			// Если до этого была ошибка, то прекращаем обновление
 			if ($error1==1){break;}
-			//echo "33333333333333\n";
-			$file_nup=@explode('.', $vars['file']);
-			if (isset($file_nup[1])==false) $file_nup[1]="";
+			$file_nup=@substr($vars['file'], -4);
+			//echo "file_nup=$file_nup\n";
+			if ($file_nup != '.nup') $file_nup[1]="";
 			$file_name=@basename($vars['file']);
 			//echo "11111=".$section2[$section]."\n";
-			if( file_exists($savepath.$file_name)==false && $file_nup[1]=="nup" && (isset($section1[$section]) || isset($section2[$section] ))){ 
+			//echo 'vars[file]='.$vars['file']."\n";
+			if( file_exists($savepath.$file_name)==false && $file_nup=='.nup' && (isset($section1[$section]) || isset($section2[$section] ))){ 
 				if($func_download($upd_ser3,$vars['file'], $savepath.$file_name,@$server['user'],@$server['password'], $proxy, $quiet)==false){
 				$error1=1;
 				break;
@@ -264,8 +287,19 @@ foreach ($servers as $server){
 				//echo "size_upd=".$vars['size']."\n"; 
 				if (file_exists($savepath.$file_name)){
 					$new_update[$section]=$vars;
-					$new_update[$section]['size']=filesize($savepath.$file_name);
 					$new_update[$section]['file']=$file_name;
+					$size5=filesize($savepath.$file_name);
+					if(($vars['size'])-$diff <= $size5 &&  $size5 <= ($vars['size'])+$diff){
+						$new_update[$section]['size']=filesize($savepath.$file_name);
+						}
+					else{
+						print_r($vars);
+						echo "size_file=$size5\n";
+						echo "size_file_upd.ver=".$vars['size']."\n";
+						echo "Error size of loading file {$vars['file']}\n";
+						$error1=1;
+						break;
+					}
 				}else{
 					echo "Error downloading file {$vars['file']}\n";
 					$error1=1;
