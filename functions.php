@@ -1,4 +1,4 @@
-<?php  
+<?php
 function func_rar($path1, $file2, $unrar='') {
 	if (!function_exists("rar_open")){
 		if ($unrar['key']==false){
@@ -10,7 +10,7 @@ function func_rar($path1, $file2, $unrar='') {
 			echo 'You have not selected the variable $unrar[path] in setup.php';
 			echo "\n";
 			$error6=1;
-			}	
+			}
 		//echo $unrar['path'].' '.$unrar['key'].' '.$path1.'/'.$file2.' '.$unrar['out_dir'].$path1.'/'; echo "\n\n";
 		exec($unrar['path'].' '.$unrar['key'].' '.$path1.'/'.$file2.' '.$unrar['out_dir'].$path1.'/', $out, $val);
 		//print_r($out);
@@ -22,148 +22,150 @@ function func_rar($path1, $file2, $unrar='') {
 		//echo "rar_php\n";
 		$rar_file = @rar_open($path1.'/'.$file2);
 		if ($rar_file==false){return false;
-		}else {	
+		}else {
 		$entries = rar_list($rar_file);
 		foreach ($entries as $entry) {
 			$entry->extract($path1);
-		}	
+		}
 		rar_close($rar_file);
 		return 0;
 		}
-	}	
+	}
 }
 
-if(!function_exists("file_put_contents")){ 
-    /** 
-     * file_put_contents PHP4 replace 
-     * 
-     * @param string $file 
-     * @param string $data 
-     * @return boolean 
-     */ 
-    function file_put_contents($file,$data){ 
-        $fp = fopen($file,"w"); 
-        if(!$fp){ 
-            return false; 
-        } 
-        fwrite($fp,$data); 
-        fclose($fp); 
-        return true; 
-    } 
-} 
+if(!function_exists("file_put_contents")){
+    /**
+     * file_put_contents PHP4 replace
+     *
+     * @param string $file
+     * @param string $data
+     * @return boolean
+     */
+    function file_put_contents($file,$data){
+        $fp = fopen($file,"w");
+        if(!$fp){
+            return false;
+        }
+        fwrite($fp,$data);
+        fclose($fp);
+        return true;
+    }
+}
 
-if(!function_exists("file_get_contents")){ 
-    /** 
-     * file_put_contents PHP4 replace 
-     * 
-     * @param string $file 
-     * @return mixed 
-     */ 
-    function file_get_contents($file){ 
-        $fp = fopen($file,"r"); 
-        if(!$fp){ 
-            return false; 
-        } 
-        $result = ""; 
-        while (!feof($fp)) { 
-            $result .= fread($fp,1024);     
-        } 
-        fclose($fp); 
-        return $result; 
-		
-    } 
-} 
+if(!function_exists("file_get_contents")){
+    /**
+     * file_put_contents PHP4 replace
+     *
+     * @param string $file
+     * @return mixed
+     */
+    function file_get_contents($file){
+        $fp = fopen($file,"r");
+        if(!$fp){
+            return false;
+        }
+        $result = "";
+        while (!feof($fp)) {
+            $result .= fread($fp,1024);
+        }
+        fclose($fp);
+        return $result;
 
-/** 
- * parses update.ver  
- *  
- * @param string $db  
- * @return array  
- */  
-function parseDB($db){ 
-    $result = array(); 
-    $last_section = ""; 
-    $lines = explode("\n",$db); 
-	foreach ($lines as $line){ 
-        $line = trim($line); 
-        if(!empty($line)){ 
-            if(@$line[0] == "[" and $line[strlen($line)-1]=="]"){ 
-                $last_section = strtoupper(trim($line,"[]")); 
-                $result[$last_section] = array(); 
-            }else{ 
+    }
+}
+
+/**
+ * parses update.ver
+ *
+ * @param string $db
+ * @return array
+ */
+function parseDB($db){
+    $result = array();
+    $last_section = "";
+    $lines = explode("\n",$db);
+	foreach ($lines as $line){
+        $line = trim($line);
+        if(!empty($line)){
+            if(@$line[0] == "[" and $line[strlen($line)-1]=="]"){
+                $last_section = strtoupper(trim($line,"[]"));
+                $result[$last_section] = array();
+            }else{
                 $a10=@strpos($line, "=");
 		$var=@substr($line, 0, $a10 );
-		//@list($var,$val) = explode("=",$line); 
+		//@list($var,$val) = explode("=",$line);
 		$val1=@substr($line,  $a10+1);
 		preg_match('/^(["\']?)(.*[^"\'])(["\']?)/', $val1, $val);
-		$result[$last_section][$var] = $val[2]; 
-            } 
-        } 
-    } 
-	return $result; 
-	
-} 
+		$result[$last_section][$var] = $val[2];
+            }
+        }
+    }
+	return $result;
 
-/** 
- * Creates update.ver from array  
- *  
- * @param unknown_type $arr  
- * @return unknown  
- */  
-function createDB($arr){ 
-    $return = ""; 
-	foreach ($arr as $section=>$params){ 
-        $return .= "[{$section}]\n"; 
-        foreach ($params as $key=>$value){ 
-            $return .= "{$key}={$value}\n"; 
-        } 
+}
+
+/**
+ * Creates update.ver from array
+ *
+ * @param unknown_type $arr
+ * @return unknown
+ */
+function createDB($arr){
+	$return = "";
+	foreach ($arr as $section=>$params){
+        $return .= "[{$section}]\n";
+        foreach ($params as $key=>$value){
+			$return .= "{$key}={$value}\n";
+        }
     $return .="\n";
-	} 
-    return $return; 
-} 
+	}
+    return $return;
+}
 
-/** 
- * Small function to help parse HTTP Headers  
- *  
- * @param unknown_type $array  
- * @return unknown  
- */  
-function parseHeader($array){ 
-    $result = array(); 
-    foreach ($array as $value){ 
-        if(substr_count($value,":")){ 
-            $data = explode(":",$value); 
-            $result[trim($data[0])] = trim($data[1]); 
-        } 
-    } 
-    return $result; 
-} 
+/**
+ * Small function to help parse HTTP Headers
+ *
+ * @param unknown_type $array
+ * @return unknown
+ */
+function parseHeader($array){
+    $result = array();
+    foreach ($array as $value){
+        if(substr_count($value,":")){
+            $data = explode(":",$value);
+            $result[trim($data[0])] = trim($data[1]);
+        }
+    }
+    return $result;
+}
 
 
-/** 
- * Downloads file from given host  
- *  
- * @param string $host HTTP Host  
- * @param string $file File on host to download  
- * @param string $save If not empty - save to file  
- * @param string $user HTTP Auth User  
- * @param string $password HTTP Auth Password  
- * @return mixed  
- */  
-function getHTTPFilec($host,$file,$save="",$user="",$password="", $proxy="", $quiet){ 
-    $host = trim(str_replace("http://","",$host),"/"); 
+/**
+ * Downloads file from given host
+ *
+ * @param string $host HTTP Host
+ * @param string $file File on host to download
+ * @param string $save If not empty - save to file
+ * @param string $user HTTP Auth User
+ * @param string $password HTTP Auth Password
+ * @return mixed
+ */
+function getHTTPFilec($host,$file,$save="",$user="",$password="", $proxy="", $quiet){
+    //echo "host=$host\n";
+    $host = trim(str_replace("http://","",$host),"/");
+    //echo "host2=$host\n";
     $file_name=basename($file);
-	$user_password = ($user)?"$user".(($password)?":{$password}":"")."@":""; 
-	$open_url = "http://{$user_password}{$host}/{$file}"; 
+	$user_password = ($user)?"$user".(($password)?":{$password}":"")."@":"";
+	$open_url = "http://{$user_password}{$host}/{$file}";
 	//echo "$open_url\n";
-	$ch = curl_init($open_url); // create cURL handle (ch) 
-	if (!$ch) { 
-		die("Couldn't initialize a cURL handle"); 
-    } 
+	$ch = curl_init($open_url); // create cURL handle (ch)
+	if (!$ch) {
+		die("Couldn't initialize a cURL handle");
+    }
 	$fp = fopen ($save, "w");
 
 	$ret = curl_setopt ($ch, CURLOPT_FILE, $fp);
-	
+
 	// Пример взят с http://ca.php.net/manual/en/function.curl-setopt.php#91952
 	// This is required to curl give us some progress
 	// if this is not set to false the progress function never
@@ -174,8 +176,8 @@ function getHTTPFilec($host,$file,$save="",$user="",$password="", $proxy="", $qu
 	// Big buffer less progress info/callbacks
 	// Small buffer more progress info/callbacks
 	$ret = curl_setopt($ch, CURLOPT_BUFFERSIZE, 512);
-	
-	
+
+
 	$ret = curl_setopt($ch, CURLOPT_HEADER,          0);
 	$ret = curl_setopt($ch, CURLOPT_FOLLOWLOCATION,  1);
 	$ret = curl_setopt($ch, CURLOPT_VERBOSE,  0);
@@ -188,20 +190,20 @@ function getHTTPFilec($host,$file,$save="",$user="",$password="", $proxy="", $qu
 		$ret = curl_setopt($ch, CURLOPT_PROXYUSERPWD,    $proxy['user'].':'.$proxy['passwd']);}
 	//$ret = curl_setopt($ch, CURLOPT_TIMEOUT,         30);
 	curl_exec ($ch);
-	
+
 	// Chek proxy BEGIN
 fclose($fp);
 if ($quiet==false){echo "Download $file_name ....";}
-if (empty($ret)) { 
-    // some kind of an error happened 
+if (empty($ret)) {
+    // some kind of an error happened
     echo curl_error($ch)."\n";
-    curl_close($ch); // close cURL handler 
-	
-} else { 
-    $info = curl_getinfo($ch); 
+    curl_close($ch); // close cURL handler
+
+} else {
+    $info = curl_getinfo($ch);
 	//print_r($info);
     curl_close($ch); // close cURL handler
-	if ($info['http_code'] == 200) { 
+	if ($info['http_code'] == 200) {
             if ($quiet==false){	echo "OK.\n";}
 			return true;
 	}
@@ -213,8 +215,8 @@ if (empty($ret)) {
 		return false;
 	}else{
 		if ($quiet==false) echo "Can't connect to NOD32 server!\n";
-		return false;	
-	}	
+		return false;
+	}
 }
 }
 
@@ -222,7 +224,7 @@ if (empty($ret)) {
 //function callback ($a=0,$b=0,$c=0, $d=0)
 //($download_size, $downloaded, $upload_size, $uploaded)
 //{
-    
+
 //	echo "$a\n $b\n $c\n $d\n";
 	// do your progress stuff here
 	//echo "download_size=$download_size\n";
@@ -233,11 +235,11 @@ if (empty($ret)) {
 
 
 function version1($db) {
-	if (isset($db['ENGINE2'])) $ver=$db['ENGINE2']['version']; 
-	elseif (isset($db['ENGINE1'])) $ver=$db['ENGINE1']['version']; 
+	if (isset($db['ENGINE2'])) $ver=$db['ENGINE2']['version'];
+	elseif (isset($db['ENGINE1'])) $ver=$db['ENGINE1']['version'];
 	else  $ver=$db['ENGINE0']['version'];
-	
-	
+
+
 	return $ver;
 	}
 
@@ -248,13 +250,13 @@ function new_section1($db, $file, $path3){
 	$db['file']=$file;
 	unset($db['filesize'], $db['crc'], $db['name'], $db['setup'] );
 	//print_r($db);
-	return $db;	
+	return $db;
 	}
 
 
 //Функция замены scandir для php4 (спасибо Yuryus)
 if (!function_exists('scandir')) {
-    function scandir($path){    
+    function scandir($path){
 	$files11 = opendir($path);
 	while (false !== ($filename = readdir($files11))) {
     	    $files1[] = $filename;
@@ -268,7 +270,7 @@ function rmfiles($path){
     // Список файлов
     $files1 = scandir($path);
     // Проверяем каждый файл
-    foreach ($files1 as $file){  
+    foreach ($files1 as $file){
 	$file_nup=explode('.', $file);
     	if (isset($file_nup[1])==true){
 	    if ($file_nup[1]=="nup") {
@@ -278,20 +280,21 @@ function rmfiles($path){
     }
 }
 
-function copyfiles($paths, $pathd){
+function copyfiles($paths, $pathd, $dop_path=""){
     // Список файлов
     $files1 = scandir($paths);
     // Проверяем каждый файл
-    foreach ($files1 as $file){  
-	$file2=explode('.', $file);
-	if (isset($file2[1])==true){
-	    if ($file2[1]=="nup" || $file2[1]=="ver") {
-		copy($paths.$file, $pathd.$file);
-	    }
-	}	
+    foreach ($files1 as $file){
+		$file2=explode('.', $file);
+		if (isset($file2[1])==true){
+			if ($file2[1]=="nup" || $file2[1]=="ver"){
+				copy($paths.$file, $pathd.$file);
+			}
+		}
     }
+    if($dop_path==true){copy($paths.$dop_path.'/update.ver', $pathd.$dop_path.'/update.ver');}
 }
-	
+
 
 // Функция по разделению параметров прокси сервера
 function proxy_par($proxy){
@@ -320,24 +323,32 @@ function proxy_par($proxy){
 }
 
 function url_servers($URL){
-	$result = array(); 
-    $last_section = ""; 
-    $lines = explode(",",$URL); 
+	$result = array();
+	$last_section = "";
+    $lines = explode(",",$URL);
     $n=0;
-	foreach ($lines as $line){ 
-        $line = trim($line); 
-        if(!empty($line)){ 
-            preg_match('/(.[^\s:@]+)@http:\/\/([a-z.0-9\-_]+)\/([a-z.0-9\-_]+)/is', $line, $p);
-			$result[$n]="http://".$p[2]."/";
-			$n++;
-            } 
-        } 
+	foreach ($lines as $line){
+		preg_match('/([^\s:@]*)http:\/\/([a-z.0-9\-_\/]+)/is', $line, $p);
+        $result[$n]='http://'.$p[2];
+		$n++;
+     }
     //print_r($result);
 	//unset($result[0], $result[1]);
 	return $result;
-	} 
+	}
 
-// Функция по закачке файла через wget + прокси 
+function url_ser($url, $path2=''){
+	$url = trim($url);
+    if(!empty($url)){
+		$num_str=strpos($url, $path2);
+		if ($num_str==true){$url1=substr($url, 0, $num_str);}else{$url1=$url;}
+		$result="http://".$url1;
+	}
+	return $result;
+}
+
+
+// Функция по закачке файла через wget + прокси
 function func_wget($url, $file, $proxy_wget="", $quiet="") {
     global $wget;
 	If ($quiet==true)$quiet_wget='-q';
@@ -349,15 +360,24 @@ function func_wget($url, $file, $proxy_wget="", $quiet="") {
 	//echo $export_proxy.' '.$wget.' '.$quiet_wget.' '.$url.' -O '.$file.' '.$proxy_parametr."\n";
 	@exec($export_proxy.' '.$wget.' '.$quiet_wget.' '.$url.' -O '.$file.' '.$proxy_parametr, $out, $val);
 	if ($val==1) { return false; } else { return true; }
-	}    
+	}
 
 function getHTTPFile1($host,$file,$save="",$user="",$password="",$proxy_wget="", $quiet=""){
     $host = trim(str_replace("http://","",$host),"/");
-    if($user==true) $user_password =  $user.':'.$password.'@'; 
+    if($user==true) $user_password =  $user.':'.$password.'@';
     $open_url = "http://{$user_password}{$host}/{$file}";
-    $fp = func_wget($open_url, $save, $proxy_wget, $quiet); 
+    $fp = func_wget($open_url, $save, $proxy_wget, $quiet);
 	return $fp;
 }
 
+
+function mkdir_new($savepath,$path){
+	$qq=explode ('/', $path);
+	foreach ($qq as $a){
+		$savepath .='/'.$a;
+		mkdir($savepath);
+	}
+	return;
+}
 
 ?>
